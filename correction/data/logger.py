@@ -12,6 +12,8 @@ class WRFLogger:
             base_log_dir = '/home/logs'
         if folder_name is None:
             folder_name = 'unknown'
+        if not os.path.exists(os.path.join(base_log_dir, folder_name)):
+            os.mkdir(os.path.join(base_log_dir, folder_name))
         self.folder_path = os.path.join(base_log_dir, folder_name)
 
         self.save_dir = os.path.join(self.folder_path, f'misc_{self.get_experiment_number()}')
