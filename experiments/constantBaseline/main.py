@@ -19,12 +19,12 @@ from correction.train import train
 if __name__ == "__main__":
     print('Device is:', cfg.GLOBAL.DEVICE)
     batch_size = 32
-    max_epochs = 50
+    max_epochs = 1
 
     LR = 1e-4
 
-    wrf_folder = 'D:\\datasets\\numpys\\wrf\\test'
-    era_folder = 'D:\\datasets\\numpys\\era\\test'
+    wrf_folder = '/home/wrf_data'
+    era_folder = '/home/era_data'
 
     print('Splitting train val test...')
     train_files, val_files, test_files = split_train_val_test(wrf_folder, era_folder, 0.7, 0.1, 0.2)

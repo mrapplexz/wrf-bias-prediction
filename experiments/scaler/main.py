@@ -7,37 +7,20 @@ import wrf
 
 sys.path.insert(0, '../../')
 from correction.data.train_test_split import split_train_val_test, find_files
-from correction.data.my_dataloader import WRFNCDataset
 from correction.data.scalers import StandardScaler
 from correction.config import cfg
 from tqdm import tqdm
 
-# wrf_folder = '/home/wrf_data/'
-# era_folder = '/home/era_data/'
-wrf_folder = 'D:\\datasets\\numpys\\wrf\\test'
-era_folder = 'D:\\datasets\\numpys\\era\\test'
-# wrf_folder = '/app/wrf_test_dataset'
-# era_folder = '/app/era_test'
+wrf_folder = '/home/wrf_data/'
+era_folder = '/home/era_data/'
+
 wrf_files = find_files(wrf_folder, 'wrf*')
 era_files = find_files(era_folder, '*')
 wrf_tensor = []
 era_tensor = []
 
-
-def load_nc_vars(filename, variables):
-    npy = []
-    with netCDF4.Dataset(filename, 'r') as ncf:
-        for i, variable in enumerate(variables):
-            var = wrf.getvar(ncf, variable, wrf.ALL_TIMES, meta=False)
-            if len(var.shape) == 3:
-                var = np.expand_dims(var, 0)
-            npy.append(var)
-    npy = np.concatenate(npy, 0)
-    return np.transpose(npy, (1, 0, 2, 3))
-
-
 print(len(wrf_files), len(era_files), 'file_lengths')
-# todo меньше нагружать оперативку
+# todo не кушать так много оперативки х(
 for wrf_file, era_file in tqdm(zip(wrf_files, era_files), total=len(wrf_files)):
     wrf_tensor.append(torch.from_numpy(np.load(wrf_file)))
     era_tensor.append(torch.from_numpy(np.load(era_file)))
