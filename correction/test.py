@@ -37,6 +37,12 @@ def test_model(model, criterion, wrf_scaler, era_scaler, dataloader, logs_dir, l
     return overall_metric
 
 
+def apply_model(data, model):
+    # Если вы пользуетесь моделью построенной с помощью другой библиотеки. Измените эту функцию,
+    # вновь поступающие данные
+    return model(data)
+
+
 def calculate_metric(wrf_orig, wrf_corr, era, criterion):
     loss_orig = criterion(wrf_orig, wrf_orig, era)
     loss_corr = criterion(wrf_orig, wrf_corr, era)
