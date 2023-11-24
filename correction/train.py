@@ -11,21 +11,19 @@ def train(train_dataloader, valid_dataloader, model, optimizer, wrf_scaler, era_
           criterion, lr_scheduler, logger, max_epochs):
     for epoch in range(max_epochs):
         train_loss = train_epoch(train_dataloader, model, criterion,
-                                 optimizer, wrf_scaler, era_scaler)
+                                 optimizer, wrf_scaler, era_scaler, lr_scheduler)
         if logger:
             logger.train_loss.append(train_loss)
         print('train loss', train_loss)
         valid_loss = eval_epoch(model, criterion, wrf_scaler, era_scaler, valid_dataloader, logger, epoch)
         print('valid_loss', valid_loss)
-        lr_scheduler.step()
-        print(lr_scheduler.get_last_lr())
         if logger:
             best_epoch = logger.save_model(model.state_dict(), epoch)
         else:
             torch.save(model.state_dict(), os.path.join(cfg.GLOBAL.MODEL_SAVE_DIR, f'model_{epoch}.pth'))
 
 
-def train_epoch(dataloader, model, criterion, optimizer, wrf_scaler, era_scaler):
+def train_epoch(dataloader, model, criterion, optimizer, wrf_scaler, era_scaler, lr_scheduler):
     train_loss = 0
     model.train()
 
@@ -46,6 +44,9 @@ def train_epoch(dataloader, model, criterion, optimizer, wrf_scaler, era_scaler)
 
         l = loss.detach().item()
         train_loss += l
+
+        lr_scheduler.step()
+
         pbar.set_description(f'{l}')
 
     return train_loss / len(dataloader)

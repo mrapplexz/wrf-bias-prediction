@@ -8,17 +8,20 @@ class WRFNPDataset(Dataset):
     def __init__(self, wrf_files, era_files, seq_len=4):
         super().__init__()
         print(len(wrf_files), 'wrf_files')
-        print(len(era_files), 'era_files')
+        if era_files is not None:
+            print(len(era_files), 'era_files')
         wrf_files.sort()
-        era_files.sort()
+        if era_files is not None:
+            era_files.sort()
         self.wrf_files = wrf_files
-        self.era_files = era_files
+        if era_files is not None:
+            self.era_files = era_files
 
         self.seq_len = seq_len
         self.file_len = 24
 
     def __len__(self):
-        l = len(self.wrf_files) * self.file_len - self.seq_len
+        l = len(self.wrf_files) * self.file_len - self.seq_len + 1
         return l if l > 0 else 0
 
     def get_data_by_id(self, i, file_attr, var_attr):
@@ -42,8 +45,11 @@ class WRFNPDataset(Dataset):
     def __getitem__(self, i):
         data = self.get_data_by_id(i, 'wrf_files', 'wrf_variables')
         data = np.flip(data, 2).copy()
-        target = self.get_data_by_id(i, 'era_files', 'era_variables')
-        return data, target
+        if hasattr(self, 'era_files'):
+            target = self.get_data_by_id(i, 'era_files', 'era_variables')
+            return data, target
+        else:
+            return data
 
 
 def find_files(directory, pattern):

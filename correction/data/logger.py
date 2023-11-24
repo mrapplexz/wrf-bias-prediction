@@ -9,7 +9,7 @@ import torch
 class WRFLogger:
     def __init__(self, base_log_dir=None, folder_name=None):
         if base_log_dir is None:
-            base_log_dir = '/home/logs'
+            base_log_dir = './logs'
         if folder_name is None:
             folder_name = 'unknown'
         if not os.path.exists(os.path.join(base_log_dir, folder_name)):

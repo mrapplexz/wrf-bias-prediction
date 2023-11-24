@@ -1,5 +1,10 @@
 import sys
-sys.path.insert(0, '../../')
+
+import transformers
+
+sys.path.insert(0, '.')
+sys.path.insert(0, './correction')
+sys.path.insert(0, './experiments')
 import torch
 from correction.config import cfg
 from correction.models.constantBias import ConstantBias
@@ -18,13 +23,13 @@ from correction.train import train
 
 if __name__ == "__main__":
     print('Device is:', cfg.GLOBAL.DEVICE)
-    batch_size = 32
-    max_epochs = 1
+    batch_size = 5
+    max_epochs = 8
 
-    LR = 1e-4
+    LR = 1.2e-4
 
-    wrf_folder = '/home/wrf_data'
-    era_folder = '/home/era_data'
+    wrf_folder = './data/train/wrf'
+    era_folder = './data/train/era5'
 
     print('Splitting train val test...')
     train_files, val_files, test_files = split_train_val_test(wrf_folder, era_folder, 0.7, 0.1, 0.2)
@@ -53,6 +58,10 @@ if __name__ == "__main__":
 
     optimizer = torch.optim.Adam(model.parameters(), lr=LR, weight_decay=1e-5)
     mult_step_scheduler = lr_scheduler.MultiStepLR(optimizer, milestones=[30, 40], gamma=0.1)
+    total_steps = len(train_dataloader) * max_epochs
+    scheduler = transformers.get_linear_schedule_with_warmup(optimizer,
+                                                             num_warmup_steps=int(0.1 * total_steps),
+                                                             num_training_steps=total_steps)
 
     train(train_dataloader, valid_dataloader, model, optimizer, wrf_scaler, era_scaler, criterion,
-          mult_step_scheduler, logger, max_epochs)
+          scheduler, logger, max_epochs)
