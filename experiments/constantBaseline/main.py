@@ -24,7 +24,7 @@ from correction.train import train
 if __name__ == "__main__":
     print('Device is:', cfg.GLOBAL.DEVICE)
     batch_size = 5
-    max_epochs = 8
+    max_epochs = 1
 
     LR = 1.2e-4
 
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     era_folder = './data/train/era5'
 
     print('Splitting train val test...')
-    train_files, val_files, test_files = split_train_val_test(wrf_folder, era_folder, 0.7, 0.1, 0.2)
+    train_files, val_files, test_files = split_train_val_test(wrf_folder, era_folder, 0.98, 0.01, 0.01)
     print('Split completed!')
 
     folder_name = os.path.split(os.path.dirname(os.path.abspath(__file__)))[-1]
